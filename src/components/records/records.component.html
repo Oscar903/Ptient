@@ -1,69 +1,121 @@
-<form (ngSubmit)="btnCerrar()">
-<div class="col-12" style="margin-top:30px;">
+<div class="container">
+  <div class="row" *ngIf="vTab">
+    <div class="col-10" style="margin-top:10px;">
+      <h5 class="modal-title">Pacientes</h5>
+    </div>
+    <div class="col-2" style="margin-top:10px;"><button type="button" style="float: right;"
+        class="btn btn-outline-secondary btn-lg btn-block" (click)="vTab=false;">Nuevo</button></div>
+    <div class="form-group">
+      <form #registroForm="ngForm" (ngSubmit)="find()">
 
-    <table class="striped highlight black-text table table-striped">
-      <thead class="thead-dark" >
-       
-        <th style="background-color: green !important;">Nombre</th>
-        <th style="background-color: green !important;">Apellido</th>
-        <th style="background-color: green !important;">Fecha</th>
-        <th style="background-color: green !important;">Doctor</th>
-        <th style="background-color: green !important;">Tipo de consulta</th>
-        <th style="background-color: green !important;">Operaciones</th>
-      </thead>
-      <tbody>
-        <tr>
-        <td >Pedro</td>
-        <td >Perez</td>
-        <td >18/05/2020</td>
-        <td >Juan</td>
-        <td></td>
-        <td>
-          <a  style="cursor:pointer; color:blue;" title="Actualizar Cita">
-            <i class="material-icons">edit</i>
-          </a>
-          <a style="cursor:pointer; color:red;" title="Eliminar Cita">
-            <i class="material-icons">delete</i>
-          </a>
-        </td></tr>
-        
-        <tr>
-          <td >Ramon</td>
-          <td >Garcia</td>
-          <td >19/05/2020</td>
-          <td >Raul</td>
-          <td></td>
-          <td>
-            <a  style="cursor:pointer; color:blue;" title="Actualizar Cita">
-              <i class="material-icons">edit</i>
-            </a>
-            <a style="cursor:pointer; color:red;" title="Eliminar Cita">
-              <i class="material-icons">delete</i>
-            </a>
-          </td></tr>
+      </form>
+    </div>
 
-          <tr>
-            <td >Marcos</td>
-            <td >Flores</td>
-            <td >19/05/2020</td>
-            <td >Francisco</td>
-            <td></td>
+    <div class="col-12" style="margin-top:30px;">
+      <table class="striped highlight black-text table table-striped">
+        <thead class="thead-dark">
+          <th>Nombre</th>
+          <th>Apellido</th>
+          <th>Fecha</th>
+          <th>Tipo Consulta</th>
+          <th>Doctor</th>
+        </thead>
+        <tbody>
+          <tr *ngFor="let ptient of _ptientService.ptients">
+            <td hidden>{{ptient._id}}</td>
+            <td>{{ ptient.nombre }}</td>
+            <td>{{ ptient.apellido }}</td>
+            <td>{{ ptient.fecha }}</td>
+            <td>{{ ptient.tipoConsulta }}</td>
+            <td>{{ ptient.doctor }}</td>
             <td>
-              <a  style="cursor:pointer; color:blue;" title="Actualizar Cita">
+              <a (click)="editPtients(ptient)" style="cursor:pointer; color:blue;" title="Actualizar Artista">
                 <i class="material-icons">edit</i>
               </a>
-              <a style="cursor:pointer; color:red;" title="Eliminar Cita">
+              <a (click)="btnDelete(ptient)" style="cursor:pointer; color:red;" title="Eliminar Artista">
                 <i class="material-icons">delete</i>
               </a>
-            </td></tr>
-        
-      </tbody>
-    </table>
-   
-    <button
-    type="submit" >
-     <a class="btn btn-outline-secondary btn-lg btn-block"  >Cerrar</a>
-    </button>
-      <li><a routerLink="../RegisterPatient">Registro de pacientes</a></li>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <ul class="pagination">
+        <li *ngFor="let item of arrayOne(total); let i = index;">
+          <a href="" (click)="getPtient(2);"> {{i+1}} </a>
+        </li>
+      </ul>
+      <div class="row">
+        <div class="col-md-6" style="margin: auto;">
+          <button style="float: center; width: 100px;" type="submit" class="btn btn-outline-danger" (click)="back()"
+            *ngIf="visPrevt">
+            Atrás
+          </button>
+          <button style="float: right; width: 100px;" type="submit" class="btn btn-outline-info" (click)="next()"
+            *ngIf="visNext">
+            Siguiente
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
-</form>
+
+  <div class="row" *ngIf="!vTab">
+    <div class="col-2">&nbsp;</div>
+    <div class="col-8" style="margin-top:50px;">
+      <div class="card">
+        <h5 class="modal-title">Datos del Paciente</h5>
+        <div class="card-content">
+          <form #registroForm="ngForm" (ngSubmit)="btnRegistro()">
+            <div class="form-group">
+              <div class="form-group"><input type="hidden" name="id" [(ngModel)]="ptient._id"></div>
+              <div class="mx-auto col-sm-10">
+                <input #nombre="ngModel" name="nombre" [(ngModel)]="ptient.nombre" type="text" class="form-control"
+                  placeholder="Nombre" required="" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div class="mx-auto col-sm-10">
+                <input #apellido="ngModel" name="apellido" [(ngModel)]="ptient.apellido" type="text"
+                  class="form-control" placeholder="Apellido" required="" />
+              </div>
+            </div>
+            <div class="form-group">
+
+              <div class="mx-auto col-sm-10">
+                <input #fecha="ngModel" name="fecha" [(ngModel)]="ptient.fecha" type="calendar" class="form-control"
+                  placeholder="Fecha" required="" />
+              </div>
+            </div>
+
+            <div class="form-group">
+
+              <div class="mx-auto col-sm-10">
+                <input #tipoConsulta="ngModel" name="tipoConsulta" [(ngModel)]="ptient.tipoConsulta" type="text"
+                  class="form-control" placeholder="Tipo de consulta" required="" />
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="mx-auto col-sm-10">
+                <input #doctor="ngModel" name="doctor" [(ngModel)]="ptient.doctor" type="text" class="form-control"
+                  placeholder="Doctor" required="" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div class="mx-auto col-sm-10 pb-3 pt-2">
+                <button type="submit" class="btn btn-outline-secondary btn-lg btn-block">
+                  Guardar
+                </button>
+                <button type="button" class="btn btn-outline-secondary btn-lg btn-block"
+                  (click)="cancela()">Cancelar</button>
+
+
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
